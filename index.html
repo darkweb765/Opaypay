@@ -1,922 +1,1355 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opay Pay</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <style>
-        /* Basic styles */
-        body {
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(to bottom right, #38A169, #1C7B47);
-            color: white;
-            /* Allow scrolling on the body */
-            overflow-y: auto; /* Changed to auto to allow vertical scrolling */
-            overflow-x: hidden; /* Prevent horizontal scrolling */
-        }
-
-        .container {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            position: relative;
-            z-index: 1;
-            margin: 20px 0; /* Add margin for scrollability */
-        }
-
-        .logo-container {
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: white;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            border: 5px solid #00C853;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .logo-inner-ring {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 5px solid #00BFA5;
-        }
-
-        h1 {
-            font-size: 2.5em;
-            margin-top: 5px;
-            margin-bottom: 10px;
-        }
-
-        h2 {
-            margin-bottom: 5px;
-            font-size: 1.5em;
-        }
-
-        p {
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            color: #ccc;
-        }
-
-        .access-code-input {
-            width: calc(100% - 40px);
-            padding: 15px 20px;
-            margin-bottom: 30px;
-            border: none;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 1.2em;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #333;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-            outline: none;
-        }
-
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .keypad button {
-            background-color: white;
-            color: #333;
-            border: none;
-            border-radius: 10px;
-            padding: 20px 0;
-            font-size: 1.5em;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.2s ease;
-        }
-
-        .keypad button:hover {
-            background-color: #f0f0f0;
-        }
-
-        .keypad button.clear {
-            background-color: #E53935;
-            color: white;
-        }
-        .keypad button.clear:hover {
-            background-color: #C62828;
-        }
-
-        .keypad button.enter {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .keypad button.enter:hover {
-            background-color: #388E3C;
-        }
-
-        .buy-button {
-            background: linear-gradient(to right, #FF9800, #FF5722);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: opacity 0.2s ease;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .buy-button:hover {
-            opacity: 0.9;
-        }
-
-        .referral-text {
-            font-size: 0.85em;
-            color: #ccc;
-        }
-
-        .refresh-link {
-            display: block;
-            margin-top: 15px;
-            font-size: 0.9em;
-            color: #ADD8E6;
-            text-decoration: underline;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-
-        .refresh-link:hover {
-            color: #87CEEB;
-        }
-
-        /* Styles for the Withdrawal Page */
-        .withdrawal-container {
-            display: none; /* Keep hidden initially */
-            font-family: Arial, sans-serif;
-            background-color: #006400;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            position: fixed; /* Keep fixed to cover the screen when active */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            overflow-y: auto; /* Allow scrolling within the withdrawal container if content is too tall */
-        }
-
-        .withdrawal-form-container {
-            background-color: #FFFFFF;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 450px;
-            box-sizing: border-box;
-            margin: auto; /* Center the form in the fixed container */
-        }
-
-        .withdrawal-form-container h2 {
-            text-align: center;
-            color: #333333;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-
-        .withdrawal-form-group {
-            margin-bottom: 25px;
-        }
-
-        .withdrawal-form-container label {
-            display: block;
-            margin-bottom: 10px;
-            color: #555555;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .withdrawal-form-container input[type="text"],
-        .withdrawal-form-container input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #DDDDDD;
-            border-radius: 6px;
-            font-size: 16px;
-            background-color: #FFFFFF;
-            box-sizing: border-box;
-            color: #333333;
-        }
-
-        .amount-display {
-            background-color: #F0F0F0;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #006400;
-            text-align: center;
-            border: 1px solid #CCCCCC;
-        }
-
-        .withdrawal-form-container input[type="submit"] {
-            background-color: #006400;
-            color: white;
-            padding: 15px 25px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 18px;
-            width: 100%;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            font-weight: bold;
-        }
-
-        .withdrawal-form-container input[type="submit"]:hover {
-            background-color: #004D00;
-            transform: translateY(-2px);
-        }
-
-        .withdrawal-form-container input[type="submit"]:active {
-            transform: translateY(0);
-        }
-
-        /* Incorrect Code Pop-up Styles */
-        .hip-hop-popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .hip-hop-popup-content {
-            background-color: #333;
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 350px;
-            width: 90%;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            position: relative;
-            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            border: 3px solid #FFD700;
-        }
-
-        .hip-hop-popup-content h3 {
-            font-family: 'Impact', sans-serif;
-            font-size: 2.2em;
-            color: #FFD700;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }
-
-        .hip-hop-popup-content p {
-            font-size: 1.1em;
-            margin-bottom: 25px;
-            color: #eee;
-        }
-
-        .popup-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .popup-buttons button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 25px;
-            font-size: 1.0em;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            font-weight: bold;
-        }
-
-        .popup-buttons .buy-code-btn {
-            background-color: #00C853;
-            color: white;
-        }
-        .popup-buttons .buy-code-btn:hover {
-            background-color: #00A140;
-            transform: translateY(-2px);
-        }
-
-        .popup-buttons .contact-us-btn {
-            background-color: #03A9F4;
-            color: white;
-        }
-        .popup-buttons .contact-us-btn:hover {
-            background-color: #0288D1;
-            transform: translateY(-2px);
-        }
-
-        .cancel-icon {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.8em;
-            color: white;
-            cursor: pointer;
-            z-index: 10;
-            transition: transform 0.2s ease;
-        }
-
-        .cancel-icon:hover {
-            transform: scale(1.1);
-        }
-
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0.3);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.05);
-                opacity: 1;
-            }
-            70% {
-                transform: scale(0.9);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* --- Styles for Login Loading and Success --- */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-        }
-
-        .spinner {
-            border: 8px solid rgba(255, 255, 255, 0.3);
-            border-top: 8px solid #00C853;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .login-success-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 1002;
-        }
-
-        .login-success-content {
-            background-color: #fff;
-            color: #333;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 300px;
-            width: 90%;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .login-success-content .icon {
-            font-size: 4em;
-            color: #00C853;
-            margin-bottom: 20px;
-        }
-
-        .login-success-content h3 {
-            font-size: 1.8em;
-            margin-bottom: 10px;
-            color: #00C853;
-        }
-
-        .login-success-content p {
-            font-size: 1.1em;
-            color: #555;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        /* --- New Styles for Withdrawal Success (Modified to match second code) --- */
-        .withdrawal-success-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #f0f2f5; /* Background from second code */
-            justify-content: center;
-            align-items: center;
-            z-index: 1003;
-            padding: 0; /* No padding on overlay itself */
-            box-sizing: border-box;
-        }
-
-        .withdrawal-success-content {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            padding: 30px 20px;
-            box-sizing: border-box;
-            animation: fadeIn 0.5s ease-out; /* Keeping a smooth transition */
-        }
-
-        .withdrawal-success-content .icon-wrapper { /* New wrapper for icon */
-            width: 80px;
-            height: 80px;
-            background-color: #4CAF50;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 25px; /* Centered with margin */
-            color: #fff;
-            font-size: 48px;
-        }
-
-        .withdrawal-success-content .icon-wrapper .material-icons {
-            font-size: 48px; /* Ensure icon size is correct */
-        }
-
-        .withdrawal-success-content .status-text { /* New class for the main status */
-            font-size: 24px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .withdrawal-success-content .amount-received { /* New class for the amount */
-            font-size: 36px;
-            font-weight: 700;
-            color: #000;
-            margin-bottom: 25px;
-        }
-
-        .withdrawal-success-content .message { /* New class for the description */
-            font-size: 14px;
-            color: #666;
-            line-height: 1.5;
-            margin-bottom: 40px;
-        }
-
-        .withdrawal-success-content .button-group { /* Group for buttons */
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .withdrawal-success-content .button { /* General button style for success popup */
-            padding: 15px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            box-sizing: border-box;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .withdrawal-success-content .button.get-receipt {
-            background-color: #e0e0e0;
-            color: #757575;
-        }
-
-        .withdrawal-success-content .button.okay {
-            background-color: #5cb85c;
-            color: #fff;
-        }
-
-        .withdrawal-success-content .button:hover {
-            transform: translateY(-2px);
-        }
-
-        .withdrawal-success-content .button.get-receipt:hover {
-            background-color: #d0d0d0;
-        }
-
-        .withdrawal-success-content .button.okay:hover {
-            background-color: #4CAF50;
-        }
-
-        /* --- Toast Notification Styles --- */
-        .toast-notification {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100%);
-            background-color: white;
-            color: black;
-            padding: 15px 20px;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            font-size: 0.95em;
-            z-index: 2000;
-            opacity: 0;
-            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
-            min-width: 250px;
-            text-align: center;
-        }
-
-        .toast-notification.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        .toast-notification .toast-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .toast-notification .toast-app-name {
-            font-weight: bold;
-            color: #00C853;
-            font-size: 0.8em;
-        }
-
-        .toast-notification .toast-time {
-            font-size: 0.75em;
-            color: #555;
-        }
-
-        .toast-notification .toast-message {
-            font-size: 1em;
-            line-height: 1.4;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miner Cash</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#000;text-align:center;}
+
+  /* ===== LOGIN PAGE ===== */
+  #loginPage {
+    color:#005c2a;display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-start;min-height:100vh;padding-top:60px;
+  }
+  .logo {
+    width:100px;height:100px;background:#005c2a;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;margin-bottom:20px;
+  }
+  .logo img{width:60px;height:auto;}
+  #loginPage h1 {color:#005c2a;margin-bottom:30px;font-size:24px;}
+  .form-container {width:90%;max-width:350px;display:flex;flex-direction:column;gap:20px;}
+  #loginPage input {
+    padding:15px;border:2px solid #005c2a;border-radius:15px;
+    background:transparent;color:#005c2a;font-size:16px;outline:none;
+  }
+  #loginPage input::placeholder {color:#005c2a;opacity:0.8;}
+  .submit-btn {
+    background:#005c2a;color:white;padding:15px;border:none;border-radius:15px;
+    font-size:18px;font-weight:bold;cursor:pointer;margin-top:10px;
+  }
+  .submit-btn:hover{background:#00401d;}
+
+  /* ===== MINER DASHBOARD ===== */
+  #minerPage {display:none;}
+  .wallet-card {
+    background:#2e7d32;color:white;padding:20px;text-align:left;
+    border-radius:5px;margin:20px;position:relative;
+  }
+  .wallet-card .top {display:flex;justify-content:space-between;font-size:14px;}
+  .wallet-card .balance{font-size:24px;margin:10px 0;}
+  .wallet-card .info{font-size:14px;margin:4px 0;}
+  .mine-button {
+    display:block;margin:20px auto 0;padding:10px 20px;background:black;color:white;
+    font-size:18px;border-radius:20px;width:200px;text-align:center;cursor:pointer;
+  }
+  .mine-button.disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  .buttons-container {
+    display:grid;grid-template-columns:repeat(2,1fr);gap:15px;
+    max-width:300px;margin:30px auto 0;
+  }
+  .btn,.btn-link {
+    border:2px solid #2e7d32;color:#2e7d32;padding:12px 0;border-radius:25px;
+    background:white;font-weight:bold;cursor:pointer;width:100%;font-size:16px;
+    text-decoration:none;display:inline-block;
+  }
+  .btn:hover,.btn-link:hover{background:#e8f5e9;}
+  .mining-logo {margin:40px auto 20px;max-width:250px;}
+  #toast,#notificationToast{
+    visibility:hidden;min-width:250px;background:#4CAF50;color:white;text-align:center;
+    border-radius:5px;padding:12px;position:fixed;top:20px;left:50%;transform:translateX(-50%);
+    z-index:1000;
+  }
+  #toast.show,#notificationToast.show{visibility:visible;animation:fadein .5s,fadeout .5s 3s;}
+  @keyframes fadein{from{top:0;opacity:0;}to{top:20px;opacity:1;}}
+  @keyframes fadeout{from{top:20px;opacity:1;}to{top:0;opacity:0;}}
+  #popup {
+    display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);
+    background:white;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.3);
+    padding:20px;width:300px;z-index:999;color:black;text-align:center;
+  }
+  #popup img{width:30px;margin-bottom:10px;}
+  #popup button{margin-top:15px;padding:8px 20px;border:none;background:#2e7d32;color:white;border-radius:5px;cursor:pointer;}
+
+  /* ===== MINER PLANS ===== */
+  #plan-page{display:none;}
+  .top-bar{
+    background:#00b300;padding:10px;color:white;font-weight:bold;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  /* ===== NEW: GO BACK ICON STYLE ===== */
+  .go-back-icon {
+      position: absolute; left: 15px; font-size: 24px; cursor: pointer;
+  }
+  .miner-box{background:#00b300;border-radius:20px;margin:20px;padding:20px;color:white;}
+  .miner-box h3{margin-top:0;font-size:18px;}
+  .miner-box p{margin:10px 0;font-size:16px;}
+  .price{float:right;font-weight:normal;}
+  .btn-plan{display:block;width:100%;background:black;color:white;padding:12px;
+    text-align:center;border:none;border-radius:15px;font-size:16px;font-weight:bold;
+    margin-top:15px;cursor:pointer;}
+
+  /* ===== BANK PAGE ===== */
+  #bank-page{display:none;padding:20px;}
+  .container{max-width:400px;margin:auto;border:1px solid #ccc;border-radius:12px;padding:20px;position:relative;}
+  .top-section{display:flex;align-items:center;justify-content:space-between;}
+  .logo-circle{width:60px;height:60px;background:#1900ff;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .logo-circle::before{content:"";width:25px;height:25px;border:3px solid orange;border-radius:50%;}
+  .top-right h2{margin:0;}
+  .message{text-align:center;margin:20px 0;font-size:17px;}
+  .info-box{border:1px solid #ddd;border-radius:10px;padding:15px;}
+  .info-row{margin-bottom:15px;}
+  .info-label{color:#555;font-size:14px;}
+  .info-value{font-size:16px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;}
+  .copy-btn{background:#ff9900;border:none;color:white;padding:5px 10px;border-radius:5px;font-size:13px;cursor:pointer;}
+  .note{margin-top:10px;font-size:15px;}
+  .confirm-btn{margin-top:20px;background:#ff9900;color:white;border:none;width:100%;padding:15px;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;}
+
+  /* OVERLAY */
+  .overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:999;}
+  .popup-bank{background:#fff;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.3);padding:20px;width:300px;z-index:999;color:black;text-align:center;position:relative;animation:fadeIn 0.3s ease-in-out;}
+  @keyframes fadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
+  .loading-circle{border:5px solid #ccc;border-top:5px solid #007bff;border-radius:50%;width:50px;height:50px;margin:0 auto 20px;animation:spin 1s linear infinite;}
+  @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+  .error-icon{color:red;font-size:50px;line-height:50px;margin-bottom:15px;display:inline-block;}
+  .try-btn{margin-top:20px;background:#007bff;color:white;border:none;width:100%;padding:12px;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;}
+  .cancel-icon{position:absolute;top:10px;right:15px;font-size:22px;color:#888;cursor:pointer;font-weight:bold;}
+  .cancel-icon:hover{color:#000;}
+
+  /* --- Styles for the Second Code (Withdrawal and Payment Flow) --- */
+  /* Global Styles */
+  *{box-sizing:border-box;}
+  .screen{display:none;padding:20px;} /* All screens are hidden by default */
+  .screen.active{display:flex; flex-direction: column; align-items: center; min-height: 100vh;} /* Active screen displays */
+
+  /* --- Styles from 1st Code (Withdrawal) --- */
+  #withdrawal-page h2{margin-top:20px;margin-bottom:30px;font-size:20px;color:#006400;}
+  #withdrawal-page .header-withdrawal { /* Added for go back icon */
+    background:#e8f5e9;padding:10px;color:#006400;font-weight:bold;
+    display: flex; align-items: center; justify-content: center; position: relative;
+    width:100%; max-width: 400px; border-radius: 8px 8px 0 0;
+  }
+  .top-image img{width:100px;height:100px;object-fit:contain;margin-bottom:20px;}
+
+  input[type="text"]#accNumber,
+  input[type="text"]#accName,
+  select#bankSelect,
+  input[type="number"]#amount,
+  button.withdraw-button {
+    width:350px;max-width:90%;padding:15px;margin:10px auto;display:block;
+    border:2px solid #006400;border-radius:25px;font-size:16px;color:#006400;background:white;
+  }
+  select#bankSelect{appearance:none;-webkit-appearance:none;-moz-appearance:none;}
+  .withdraw-button{
+    background:#004d00;
+    color:white;font-weight:bold;cursor:pointer;border:none;
+  }
+  .withdraw-button:hover{background:#003300;}
+
+  #pin-page h2{font-size:24px;margin-bottom:30px;color:#0a4d1d;}
+  #pin-page .header-pin { /* Added for go back icon */
+    background:#e8f5e9;padding:10px;color:#0a4d1d;font-weight:bold;
+    display: flex; align-items: center; justify-content: center; position: relative;
+    width:100%; max-width: 400px; border-radius: 8px 8px 0 0;
+  }
+  .pin-box{
+    margin:0 auto 30px;width:250px;height:60px;
+    border:2px solid #0a4d1d;border-radius:15px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;letter-spacing:10px;color:#0a4d1d;
+  }
+  .keypad{
+    display:grid;grid-template-columns:repeat(3,80px);gap:15px;
+    justify-content:center;margin-bottom:30px;
+  }
+  .key{
+    background:#0a4d1d;color:white;border:none;border-radius:15px;
+    font-size:24px;padding:20px;cursor:pointer;transition:0.2s;
+  }
+  .key:active{transform:scale(0.95);}
+
+  .buy-btn {
+    background:#008000;color:#fff;border:none;border-radius:25px;
+    padding:15px;font-size:16px;font-weight:bold;cursor:pointer;
+    width:200px;margin-top:20px;
+  }
+  .buy-btn:hover {background:#009900;}
+
+  .wrapper{text-align:center;padding:0 20px;max-width:350px;width:100%;margin:auto;}
+  .check-circle{
+    width:100px;height:100px;border-radius:50%;
+    border:6px solid #27ae60;display:flex;justify-content:center;align-items:center;
+    margin:0 auto 20px;
+  }
+  .checkmark{font-size:48px;color:#27ae60;font-weight:bold;}
+  #success-page .title{font-size:20px;font-weight:600;color:#27ae60;margin-bottom:16px;}
+  .message{font-size:16px;color:#333;line-height:1.5;margin-bottom:40px;}
+  .message span{font-weight:bold;}
+  #success-page .button{
+    background:#27ae60;color:#fff;border:none;border-radius:6px;
+    padding:12px 20px;font-size:16px;width:100%;max-width:180px;margin:0 auto;
+    cursor:pointer;text-decoration:none;display:inline-block;
+  }
+  #success-page .button:active{background:#219150;}
+
+  .modal{
+    display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.5);justify-content:center;align-items:center;
+    z-index:1000;
+  }
+  .modal-content{
+    background:white;color:#006400;padding:20px;border-radius:10px;
+    width:90%;max-width:300px;text-align:center;position:relative;
+    animation:fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
+  .modal-content .close{
+    position:absolute;top:10px;right:15px;font-size:22px;
+    font-weight:bold;color:#006400;cursor:pointer;
+  }
+
+  #processingScreen h2 {
+    margin-top:100px;
+    font-size:22px;
+    color:#006400;
+  }
+
+  /* --- Styles from 2nd Code (Buy Code) --- */
+  .header {
+    background-color: #6a0dad;
+    color: #ffffff;
+    padding: 15px 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    width:100%;
+    max-width: 400px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  #buy-code-page { justify-content: flex-start; }
+  .container-buy-code { /* Renamed to avoid conflict */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    overflow: hidden;
+  }
+  .form-section { padding: 20px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label {
+    display: block; margin-bottom: 8px;
+    font-weight: bold; color: #333; text-align: left;
+  }
+  .form-group input[type="text"]#fullName, .form-group input[type="email"]#emailAddress { /* Specific selectors */
+    width: calc(100% - 22px); padding: 12px 10px;
+    border: 1px solid #ddd; border-radius: 6px; font-size: 1em;
+  }
+  .amount-display {
+    background-color: #f7f7f7; padding: 12px 10px;
+    border: 1px solid #ddd; border-radius: 6px; font-size: 1em;
+    color: #333; width: calc(100% - 22px); text-align: left;
+  }
+  .pay-button {
+    width: 100%; padding: 15px; background-color: #6a0dad;
+    color: #ffffff; border: none; border-radius: 6px;
+    font-size: 1.1em; font-weight: bold; cursor: pointer;
+  }
+  .info-text {
+    text-align: center; margin-top: 25px;
+    font-size: 0.9em; color: #666; padding: 0 20px 20px;
+  }
+
+  #preparing-payment-page { justify-content: center; min-height: 100vh; }
+  #preparing-payment-page .header {
+    background-color: #5b21b6; position: absolute; top: 0; left: 0;
+    width: 100%; box-sizing: border-box;
+  }
+  .spinner {
+    border: 8px solid rgba(0, 0, 0, 0.1); border-left-color: #5b21b6;
+    border-radius: 50%; width: 60px; height: 60px;
+    animation: spin 1.2s linear infinite; margin-bottom: 30px;
+  }
+  /* @keyframes spin defined earlier */
+  #preparing-payment-page .title, #payment-verification-loading .title { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 10px; }
+  .subtitle { font-size: 16px; color: #666; margin-bottom: 40px; }
+  .progress-bar-container {
+    width: 80%; max-width: 300px; background-color: #e0e0e0;
+    border-radius: 5px; height: 8px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; background-color: #5b21b6;
+    animation: fillProgress 3s ease-in-out forwards;
+  }
+  @keyframes fillProgress { 0% { width: 0%; } 100% { width: 100%; } }
+
+  #bank-transfer-page { justify-content: center; }
+  .bank-container-withdrawal { /* Renamed to avoid conflict */
+    max-width: 400px; width: 100%; border: 1px solid #ccc;
+    border-radius: 12px; padding: 20px; background-color: #fff; color: #000;
+  }
+  .top-section-withdrawal { /* Renamed to avoid conflict */
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo-circle-withdrawal { /* Renamed to avoid conflict */
+    width: 60px; height: 60px; background-color: #1900ff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .logo-circle-withdrawal::before {
+    content: ""; width: 25px; height: 25px;
+    border: 3px solid orange; border-radius: 50%;
+  }
+  .top-right-withdrawal { text-align: right; }
+  .top-right-withdrawal h2 { margin: 0; }
+  .top-right-withdrawal small { color: #555; display: block; margin-bottom: 5px; }
+  #bank-transfer-page .message { margin: 20px 0; font-size: 17px; }
+  .info-box-withdrawal { border: 1px solid #ddd; border-radius: 10px; padding: 15px; }
+  .info-row-withdrawal { margin-bottom: 15px; text-align: left; }
+  .info-label-withdrawal { color: #555; font-size: 14px; }
+  .info-value-withdrawal {
+    font-size: 16px; font-weight: bold; display: flex;
+    justify-content: space-between; align-items: center;
+  }
+  .copy-btn-withdrawal {
+    background-color: #ff9900; border: none; color: white;
+    padding: 5px 10px; border-radius: 5px; font-size: 13px; cursor: pointer;
+  }
+  .note-withdrawal { margin-top: 10px; font-size: 15px; }
+  .confirm-btn-withdrawal {
+    margin-top: 20px; background-color: #ff9900; color: white;
+    border: none; width: 100%; padding: 15px; border-radius: 8px;
+    font-size: 16px; font-weight: bold; cursor: pointer;
+  }
+
+  #payment-verification-page { min-height: 100vh; background-color: #fff; }
+  #payment-verification-loading {
+    display: block; width: 100%;
+  }
+  #payment-verification-loading .header { background-color: #2e0d6d; border-radius: 0;}
+  .loader-container { margin-top: 60px; }
+  .loader {
+    border: 5px solid #f3f3f3; border-top: 5px solid #ff7a00;
+    border-radius: 50%; width: 50px; height: 50px;
+    animation: spin 1s linear infinite; margin: 30px auto;
+  }
+  #payment-verification-loading .progress-bar-container {
+    margin: 40px auto 20px; width: 90%; height: 8px;
+    background-color: #e0e0e0; border-radius: 10px; overflow: hidden;
+  }
+  #payment-verification-loading .progress-bar {
+    height: 100%; width: 0%; background-color: #ff7a00; transition: width 0.4s ease;
+  }
+  #payment-verification-loading .note { font-size: 14px; color: #7f8c8d; margin-top: 20px; }
+
+  #payment-verification-failed {
+    display: none; justify-content: center; align-items: center; padding: 20px;
+    width: 100%; background-color: #f8f8f8;
+  }
+  .failed-container {
+    background-color: #fff; border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center; padding: 40px 30px;
+    max-width: 400px; width: 100%;
+  }
+  .icon-circle {
+    width: 80px; height: 80px; background-color: #ff4d4f;
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    margin: 0 auto 30px;
+  }
+  .icon-circle svg { fill: #fff; width: 40px; height: 40px; }
+  h1 { color: #fa8c16; font-size: 24px; font-weight: 600; margin-bottom: 20px; }
+  p { color: #595959; font-size: 16px; margin-bottom: 20px; line-height: 1.5; }
+  .contact-info { font-size: 14px; color: #595959; margin-top: 20px; }
+  .email-wrapper {
+    display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px;
+  }
+  .email-wrapper a { color: #1890ff; text-decoration: none; font-weight: 600; font-size: 15px; }
+  .copy-icon { width: 18px; height: 18px; cursor: pointer; fill: #8c8c8c; transition: fill 0.2s ease; }
+  .copy-icon:hover { fill: #1890ff; }
+  .button {
+    display: block; width: calc(100% - 30px); padding: 15px;
+    border-radius: 8px; font-size: 16px; font-weight: 600;
+    text-align: center; text-decoration: none; margin-top: 15px; cursor: pointer;
+  }
+  .button.primary { background-color: #8a2be2; color: #fff; }
+  .button.primary:hover { background-color: #7b24cc; }
+  .button.secondary { background-color: #fff; color: #595959; border: 2px solid #d9d9d9; }
+  .button.secondary:hover { background-color: #f0f0f0; }
+
+  /* New Opay Popup Styles */
+  #opayWarningPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1001; /* Higher than other popups/overlays */
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.6;
+    border: 2px solid #ffcc00; /* Warning color border */
+  }
+
+  #opayWarningPopup h3 {
+    color: #e6b800; /* Darker warning color */
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 20px;
+  }
+
+  #opayWarningPopup p {
+    margin-bottom: 15px;
+  }
+
+  #opayWarningPopup .ok-button {
+    background-color: #4CAF50; /* Green for OK button */
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+  }
+
+  #opayWarningPopup .ok-button:hover {
+    background-color: #45a049;
+  }
+
+  .popup-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+  }
+
+  /* Styles for the new "Welcome new user" popup */
+  #welcomeNewUserPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1002; /* Higher than other popups */
+    width: 90%;
+    max-width: 300px;
+    text-align: center;
+    color: #000;
+  }
+
+  #welcomeNewUserPopup h3 {
+    color: #2e7d32;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 22px;
+  }
+
+  #welcomeNewUserPopup p {
+    margin-bottom: 20px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  #welcomeNewUserPopup button {
+    background-color: #2e7d32;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+  }
+
+  #welcomeNewUserPopup button:hover {
+    background-color: #1e5c21;
+  }
+
+  /* Styles for loading animation popup */
+  #miningLoadingPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1002;
+    text-align: center;
+    color: #000;
+  }
+
+  #miningLoadingPopup .loading-spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #2e7d32;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+  }
+
+  #miningLoadingPopup p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2e7d32;
+  }
+
+  /* Styles for success message popup */
+  #mineSuccessMessagePopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1002;
+    width: 90%;
+    max-width: 280px;
+    text-align: center;
+    color: #000;
+  }
+
+  #mineSuccessMessagePopup .success-icon {
+    color: #27ae60;
+    font-size: 50px;
+    margin-bottom: 15px;
+  }
+
+  #mineSuccessMessagePopup h3 {
+    color: #27ae60;
+    margin-top: 0;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  #mineSuccessMessagePopup button {
+    background-color: #27ae60;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+  }
+
+  #mineSuccessMessagePopup button:hover {
+    background-color: #219150;
+  }
+
+</style>
 </head>
 <body>
-    <div class="container" id="firstPage">
-        <div class="logo-container">
-            <div class="logo">
-                <div class="logo-inner-ring"></div>
-            </div>
-        </div>
 
-        <h2>Welcome To</h2>
-        <h1>Opay Pay</h1>
-        <p>Enter (6) digit Access Code</p>
+<audio id="loginSuccessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+<audio id="loginFailureSound" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" preload="auto"></audio>
+<audio id="mineSuccessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+<audio id="errorSound" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" preload="auto"></audio>
 
-        <input type="text" class="access-code-input" placeholder=" " maxlength="6">
+<div id="loginPage">
+  <div class="logo"><img src="https://raw.githubusercontent.com/darkweb765/Logo/main/IMG-20250717-WA0000(1).jpg"></div>
+  <h1>Miner Cash</h1>
+  <div class="form-container">
+    <input type="number" id="phoneNumber" placeholder="Phone number" maxlength="11">
+    <input type="text" id="accountName" placeholder="Account Name">
+    <input type="number" id="accountNumber" placeholder="Account number" maxlength="10">
+    <button class="submit-btn" id="submitBtn">START EARNING</button>
+  </div>
+</div>
 
-        <div class="keypad">
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>4</button>
-            <button>5</button>
-            <button>6</button>
-            <button>7</button>
-            <button>8</button>
-            <button>9</button>
-            <button class="clear">Clear</button>
-            <button>0</button>
-            <button class="enter">Enter</button>
-        </div>
-
-        <button class="buy-button" id="buyAccessCodeMain">Buy Access Code</button>
-
-        <p class="referral-text">Earn by referral code</p>
-
-        <a href="#" class="refresh-link" id="refreshApp">Refresh App</a>
+<div id="minerPage">
+  <div id="toast">Mined NGN250,000 successfully!</div>
+  <div id="notificationToast">No notifications</div>
+  <div class="wallet-card">
+    <div class="top">
+      <div>Wallet Balance</div>
+      <div><a href="#" style="color:white;text-decoration:underline;" id="transactionHistoryLink">Transaction history ></a></div>
     </div>
+    <div class="balance" id="balance">₦0</div>
+    <div class="info" id="displayedAccountName">NAME :</div>
+    <div class="info" id="displayedAccountNumber">Account :</div>
+    <div class="info">Current miner : Free Miner</div>
+    <div class="mine-button" id="mineBtn">Mine <span>🎁</span></div>
+  </div>
+  <div class="buttons-container">
+    <button class="btn" id="buyMinerBtn">Buy miner</button>
+    <a href="https://wa.me/2348076204969?text=sir%20please%20i%20need%20help%20on%20my%20Miner%20cash." target="_blank" class="btn-link">Contact us</a>
+    <button class="btn" id="withdrawBtn">Withdraw</button> <a href="https://whatsapp.com/channel/0029Vb5ijJfAYlUS3g6dDu0C" target="_blank" class="btn-link">Join group</a>
+  </div>
+  <img src="https://raw.githubusercontent.com/darkweb765/Logo/main/IMG-20250717-WA0000(1).jpg" class="mining-logo">
+  <div id="popup">
+    <img src="https://img.icons8.com/emoji/48/money-bag-emoji.png">
+    <h3>Mined successful</h3>
+    <p>You have successfully mined NGN250,000.00 to your wallet now you can withdraw</p>
+    <button onclick="closePopup()">OK</button>
+  </div>
+</div>
 
-    <div class="withdrawal-container" id="secondPage">
-        <div class="withdrawal-form-container">
-            <h2>Fund Opay Wallet</h2>
-            <form id="withdrawalForm" action="/process_opay_withdrawal" method="POST">
-                <div class="withdrawal-form-group">
-                    <label for="display_amount">Withdrawal Amount:</label>
-                    <div class="amount-display" id="display_amount">₦100,000.00</div>
-                </div>
+<div id="plan-page">
+  <div class="top-bar">
+      <span class="go-back-icon" id="goBackIconMinerPlans">←</span>
+      Miner Plans
+  </div>
+  <div class="miner-box">
+    <h3>💰 Bronze Miner <span class="price">₦5,000</span></h3>
+    <p>This Miner Can Mine ₦150,000 3 Times A Day...</p>
+    <button class="btn-plan" onclick="activateMiner(5000)">ACTIVATE BRONZE MINER</button>
+  </div>
+  <div class="miner-box">
+    <h3>💰 Silver Miner <span class="price">₦10,000</span></h3>
+    <p>This Miner Can Mine ₦500,000 7 Times A Day...</p>
+    <button class="btn-plan" onclick="activateMiner(10000)">ACTIVATE SILVER MINER</button>
+  </div>
+  <div class="miner-box">
+    <h3>💰 Gold Miner <span class="price">₦15,000</span></h3>
+    <p>This Miner Can Mine ₦80,000 Every 5 Minutes...</p>
+    <button class="btn-plan" onclick="activateMiner(15000)">ACTIVATE GOLD MINER</button>
+  </div>
+</div>
 
-                <input type="hidden" id="withdrawal_amount" name="withdrawal_amount" value="100000.00">
+<div id="bank-page">
+  <div class="top-bar">
+    <span class="go-back-icon" id="goBackIconBankPage">←</span>
+    Payment Section
+  </div>
+  <div class="container">
+    <div class="top-section">
+      <div class="logo-circle"></div>
+      <div class="top-right"><h2 id="pay-amount">NGN 0</h2></div>
+    </div>
+    <div class="message">Proceed to your bank app to complete this Transfer</div>
+    <div class="info-box">
+      <div class="info-row"><div class="info-label">Amount</div><div class="info-value" id="amount-text">NGN 0</div></div>
+      <div class="info-row"><div class="info-label">Account Number</div><div class="info-value"><span id="acct">807 952 2338</span><button class="copy-btn" onclick="copyToClipboard('acct')">Copy</button></div></div>
+      <div class="info-row"><div class="info-label">Bank Name</div><div class="info-value">Opay Bank</div></div>
+      <div class="info-row"><div class="info-label">Account Name</div><div class="info-value">DIVINE CHIGOZIRIM JONAH</div></div>
+    </div>
+    <div class="note">Make Payment to the Account Above to Activate your miner</div>
+    <button class="confirm-btn" onclick="startVerification()">I have made this bank Transfer</button>
+  </div>
+</div>
 
-                <div class="withdrawal-form-group">
-                    <label for="opay_account_number">Opay Account Number:</label>
-                    <input type="text" id="opay_account_number" name="opay_account_number" placeholder="Enter your Opay Account Number" required>
-                </div>
+<div class="overlay" id="overlay"><div class="popup-bank" id="popup-content"></div></div>
 
-                <div class="withdrawal-form-group">
-                    <label for="opay_account_name">Opay Account Name:</label>
-                    <input type="text" id="opay_account_name" name="opay_account_name" placeholder="Enter your Opay Account Name" required>
-                </div>
+<div id="withdrawal-page" class="screen">
+  <div class="header-withdrawal">
+    <span class="go-back-icon" id="goBackIconWithdrawal">←</span>
+    <h2>Input your withdraw detail's</h2>
+  </div>
+  <div class="top-image">
+    <img src="https://raw.githubusercontent.com/darkweb765/Logo/main/IMG-20250717-WA0000(1).jpg" alt="Bank Icon">
+  </div>
+  <input type="text" id="accNumber" placeholder="Account number" required>
+  <input type="text" id="accName" placeholder="Account name" required>
+  <select id="bankSelect" required>
+    <option value="" disabled selected>Select your bank</option>
+    <option>Access Bank</option>
+    <option>Opay</option>
+    <option>PalmPay</option>
+    <option>Kuda Bank</option>
+    <option>Moniepoint</option>
+    <option>FairMoney</option>
+    <option>Chipper Cash</option>
+    <option>UBA</option>
+    <option>Zenith Bank</option>
+    <option>First Bank</option>
+    <option>GTBank</option>
+    <option>Polaris Bank</option>
+    <option>Keystone Bank</option>
+    <option>Fidelity Bank</option>
+    <option>Ecobank</option>
+    <option>Wema Bank</option>
+    <option>Sterling Bank</option>
+    <option>Union Bank</option>
+    <option>Stanbic IBTC Bank</option>
+    <option>Heritage Bank</option>
+    <option>Jaiz Bank</option>
+    <option>Providus Bank</option>
+    <option>Titan Trust Bank</option>
+    <option>Globus Bank</option>
+    <option>PremiumTrust Bank</option>
+    <option>Suntrust Bank</option>
+    <option>Parallex Bank</option>
+    <option>Unity Bank</option>
+    <option>Rubies Bank</option>
+    <option>VFD MFB</option>
+    <option>Eyowo MFB</option>
+    <option>ALAT (Wema Digital Bank)</option>
+    <option>Renmoney MFB</option>
+    <option>Sparkle Bank</option>
+    <option>Branch MFB</option>
+    <option>MKudi MFB</option>
+  </select>
+  <input type="number" id="amount" placeholder="Amount" required>
+  <button class="withdraw-button" onclick="goToProcessing()">WITHDRAW</button>
+</div>
 
-                <input type="submit" value="Withdrawal">
-            </form>
+<div id="processingScreen" class="screen">
+  <h2>Processing withdrawal…</h2>
+</div>
+
+<div id="pin-page" class="screen">
+  <div class="header-pin">
+    <span class="go-back-icon" id="goBackIconPin">←</span>
+    <h2>Enter Activation PIN</h2>
+  </div>
+  <div class="pin-box" id="pinDisplay"></div>
+  <div class="keypad">
+    <button class="key" onclick="addDigit('1')">1</button>
+    <button class="key" onclick="addDigit('2')">2</button>
+    <button class="key" onclick="addDigit('3')">3</button>
+    <button class="key" onclick="addDigit('4')">4</button>
+    <button class="key" onclick="addDigit('5')">5</button>
+    <button class="key" onclick="addDigit('6')">6</button>
+    <button class="key" onclick="addDigit('7')">7</button>
+    <button class="key" onclick="addDigit('8')">8</button>
+    <button class="key" onclick="addDigit('9')">9</button>
+    <button class="key" onclick="removeDigit()">⌫</button>
+    <button class="key" onclick="addDigit('0')">0</button>
+    <button class="key" onclick="submitPin()">✔</button>
+  </div>
+  <button class="buy-btn" onclick="showScreen('buy-code-page')">Buy Activation Code</button>
+</div>
+
+<div id="success-page" class="screen">
+  <div class="wrapper">
+    <div class="check-circle"><div class="checkmark">✓</div></div>
+    <div class="title">Transfer Successful</div>
+    <div class="message">
+      Your <span id="successAmount">₦0</span> has been sent to your bank. You will receive alert shortly.
+    </div>
+    <a href="#" class="button" onclick="handleSuccessPageBackToHome()">Back to Home</a>
+  </div>
+</div>
+
+<div id="errorModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 style="font-size:20px;font-weight:bold;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <img src="https://img.icons8.com/fluency/48/bank-building.png" alt="icon" style="width:24px;height:24px;">
+      Activation Pin
+    </h3>
+    <p style="font-size:14px;line-height:1.5;margin:10px 0;">
+      Invalid activation pin. Please purchase your activation pin from the application to continue the process and start making money daily. Hope you enjoy our app.
+    </p>
+    <p style="font-weight:bold;font-size:14px;line-height:1.5;margin:10px 0;">
+      NOTE: Your activation pin cannot be shared. Each activation code is designed for a user.
+    </p>
+    <button class="buy-btn" onclick="closeModal(); showScreen('buy-code-page');" style="width:150px;">
+      BUY CODE
+    </button>
+  </div>
+</div>
+
+<div id="buy-code-page" class="screen">
+  <div class="container-buy-code">
+    <div class="header">
+      <span class="go-back-icon" id="goBackIconBuyCode">←</span>
+      Buy Activation Code
+    </div>
+    <div class="form-section">
+      <div class="form-group">
+        <label>Amount</label>
+        <div class="amount-display">₦7,250</div>
+      </div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="fullName" placeholder="Your full name">
+      </div>
+      <div class="form-group">
+        <label>Your Email Address</label>
+        <input type="email" id="emailAddress" placeholder="email address">
+      </div>
+      <button class="pay-button" onclick="goToPaymentLoading()">Pay</button>
+    </div>
+    <div class="info-text">Your Activation Code will be sent to your email once your payment is confirmed.</div>
+  </div>
+</div>
+
+<div id="preparing-payment-page" class="screen">
+  <div class="header">
+    <span class="go-back-icon" id="goBackIconPrepPayment">←</span>
+    Buy Activation code
+  </div>
+  <div class="spinner"></div>
+  <div class="title">Preparing Payment Account</div>
+  <div class="subtitle">Please wait while we set up your payment...</div>
+  <div class="progress-bar-container">
+    <div class="progress-bar"></div>
+  </div>
+</div>
+
+<div id="bank-transfer-page" class="screen">
+  <div class="bank-container-withdrawal">
+    <div class="top-section-withdrawal">
+      <div class="logo-circle-withdrawal"></div>
+      <div class="top-right-withdrawal">
+        <small id="userEmail">example@email.com</small>
+        <h2>NGN 7,250</h2>
+      </div>
+    </div>
+    <div class="message">Proceed to your bank app to complete this Transfer</div>
+    <div class="info-box-withdrawal">
+      <div class="info-row-withdrawal">
+        <div class="info-label-withdrawal">Amount</div>
+        <div class="info-value-withdrawal">NGN 7,250</div>
+      </div>
+      <div class="info-row-withdrawal">
+        <div class="info-label-withdrawal">Account Number</div>
+        <div class="info-value-withdrawal">
+          <span id="acct_withdrawal">807 952 2338</span> <button class="copy-btn-withdrawal" onclick="copyToClipboardWithdrawal('acct_withdrawal')">Copy</button>
         </div>
+      </div>
+      <div class="info-row-withdrawal">
+        <div class="info-label-withdrawal">Bank Name</div>
+        <div class="info-value-withdrawal">Opay Bank</div>
+      </div>
+      <div class="info-row-withdrawal">
+        <div class="info-label-withdrawal">Account Name</div>
+        <div class="info-value-withdrawal">DIVINE CHIGOZIRIM JONAH</div>
+      </div>
     </div>
+    <div class="note-withdrawal">Make Payment to the Account Above to get your PAY ID</div>
+    <button class="confirm-btn-withdrawal" onclick="goToVerification()">I have made this bank Transfer</button>
+  </div>
+</div>
 
-    <div class="hip-hop-popup-overlay" id="incorrectCodePopup">
-        <div class="hip-hop-popup-content">
-            <div class="cancel-icon" id="closePopup">&times;</div>
-            <h3>Incorrect Access Code</h3>
-            <p>The access code you entered is incorrect. Please click the button below to buy a valid access code</p>
-            <div class="popup-buttons">
-                <button class="buy-code-btn" id="buyCodePopup">Buy Code</button>
-                <button class="contact-us-btn" id="contactUsPopup">Contact Us</button>
-            </div>
+<div id="payment-verification-page" class="screen">
+  <div id="payment-verification-loading">
+    <div class="header">
+      <span class="go-back-icon" id="goBackIconVerifyPayment">←</span>
+      Confirming Payment
+    </div>
+    <div class="loader-container">
+      <div class="loader"></div>
+      <h2>Confirming Your Payment</h2>
+      <p>Please wait while we verify your transaction...</p>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="verification-progress-bar"></div>
+      </div>
+      <p class="note">This may take a few moments<br/>Please do not close this page</p>
+    </div>
+  </div>
+
+  <div id="payment-verification-failed">
+    <div class="failed-container">
+      <div class="icon-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </div>
+      <h1>Transaction verification failed!</h1>
+      <p>Your payment could not be completed.<br>Reason: No Payment received from you or Invalid payment method.</p>
+      <div class="contact-info">
+        If you need help contact us
+        <div class="email-wrapper">
+          <a id="contactEmail" href="mailto:opaypay618@gmail.com">opaypay618@gmail.com</a>
+          <svg class="copy-icon" id="copyEmailIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+          </svg>
         </div>
+      </div>
+      <button class="button primary" onclick="restartVerificationProcess()">Try Again</button>
+      <a href="#" onclick="showScreen('minerPage')" class="button secondary">Go to Dashboard</a>
     </div>
+  </div>
+</div>
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-    </div>
+<div class="popup-backdrop" id="opayWarningBackdrop"></div>
+<div id="opayWarningPopup">
+  <h3>⚠️ Opay Service is currently down.</h3>
+  <p>Please **DO NOT** make your payment using Opay bank at this time.</p>
+  <p>If you try to pay through Opay, your payment may not be confirmed.</p>
+  <p>Instead, kindly transfer your money to any other bank account and use it to pay for your activation PIN.</p>
+  <p>We will update you once Opay service is back.</p>
+  <button class="ok-button" onclick="closeOpayWarningPopup()">OK</button>
+</div>
 
-    <div class="login-success-overlay" id="loginSuccessOverlay">
-        <div class="login-success-content">
-            <div class="icon">&#10004;</div> <h3>Login Successful!</h3>
-            <p>Good job! Redirecting you now...</p>
-        </div>
-    </div>
+<div class="popup-backdrop" id="mineButtonPopupBackdrop"></div>
 
-    <div class="withdrawal-success-overlay" id="withdrawalSuccessOverlay">
-        <div class="withdrawal-success-content">
-            <div class="icon-wrapper">
-                <i class="material-icons">check</i>
-            </div>
-            <div class="status-text">Withdrawal Successful</div>
-            <div class="amount-received" id="successfulWithdrawalAmount">₦100,000.00</div>
-            <div class="message">
-                The recipient account is expected to be credited within 5 minutes, subject to notification by the bank.
-            </div>
-            <div class="button-group">
-                <button class="button get-receipt">Get Receipt</button>
-                <button class="button okay" id="withdrawalOkButton">Okay</button>
-            </div>
-        </div>
-    </div>
+<div id="welcomeNewUserPopup">
+    <h3>Welcome new user!</h3>
+    <p>Congrats! You have been given a free miner plan which can mine ₦250,000 to your wallet.</p>
+    <button id="startMiningBtn">START MINING</button>
+</div>
 
-    <div class="toast-notification" id="toastNotification">
-        <div class="toast-header">
-            <span class="toast-app-name">Opay</span>
-            <span class="toast-time" id="toastTime"></span>
-        </div>
-        <div class="toast-message" id="toastMessage"></div>
-    </div>
+<div id="miningLoadingPopup">
+    <div class="loading-spinner"></div>
+    <p>Mining...</p>
+</div>
 
-    <script>
-        const accessCodeInput = document.querySelector('.access-code-input');
-        const keypadButtons = document.querySelectorAll('.keypad button');
-        const firstPage = document.getElementById('firstPage');
-        const secondPage = document.getElementById('secondPage');
-        const incorrectCodePopup = document.getElementById('incorrectCodePopup');
-        const closePopupBtn = document.getElementById('closePopup');
-        const buyCodePopupBtn = document.getElementById('buyCodePopup');
-        const contactUsPopupBtn = document.getElementById('contactUsPopup');
-        const buyAccessCodeMainBtn = document.getElementById('buyAccessCodeMain');
-        const refreshAppLink = document.getElementById('refreshApp');
+<div id="mineSuccessMessagePopup">
+    <div class="success-icon">✅</div>
+    <h3>Mined successfully!</h3>
+    <button onclick="closeMineSuccessMessagePopup()">OK</button>
+</div>
 
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const loginSuccessOverlay = document.getElementById('loginSuccessOverlay');
+<script>
+  // ===== AUDIO ELEMENTS =====
+  const loginSuccessSound = document.getElementById('loginSuccessSound');
+  const loginFailureSound = document.getElementById('loginFailureSound');
+  const mineSuccessSound = document.getElementById('mineSuccessSound');
+  const errorSound = document.getElementById('errorSound');
 
-        const withdrawalForm = document.getElementById('withdrawalForm');
-        const withdrawalSuccessOverlay = document.getElementById('withdrawalSuccessOverlay');
-        const withdrawalOkButton = document.getElementById('withdrawalOkButton'); // Changed from original
-        const successfulWithdrawalAmount = document.getElementById('successfulWithdrawalAmount'); // New element
+  // Global variable for balance
+  let currentBalance = 0;
+  let mined = false; // To track if mining has occurred
 
-        const toastNotification = document.getElementById('toastNotification');
-        const toastTime = document.getElementById('toastTime');
-        const toastMessage = document.getElementById('toastMessage');
+  // Elements
+  const balanceDisplay = document.getElementById('balance');
+  const mineButton = document.getElementById('mineBtn');
 
-        const correctCode = "351710";
-        const names = [
-            'Adewale', 'Chiamaka', 'Ibrahim', 'Oluwaseun', 'Emeka', 'Zainab', 'Tunde', 'Ifeoma', 'Musa', 'Yetunde',
-            'Uche', 'Nneka', 'Bashir', 'Temitope', 'Ebuka', 'Aisha', 'Kunle', 'Adaeze', 'Sulaiman', 'Morenike',
-            'Obinna', 'Kemi', 'Aminu', 'Chioma', 'Dapo', 'Ngozi', 'Farouk', 'Ronke', 'Chinedu', 'Halima',
-            'Babajide', 'Amarachi', 'Kabir', 'Omotola', 'Nnamdi', 'Bisi', 'Gambo', 'Uzoamaka', 'Femi', 'Titilayo',
-            'Yakubu', 'Oluchi', 'Tobi', 'Onyinye', 'Idris', 'Abimbola', 'Eze', 'Jumoke', 'Haruna', 'Ogechi',
-            'Ayoola', 'Chisom', 'Abdulahi', 'Funke', 'Chuka', 'Rukayat', 'Segun', 'Nkiru', 'Bello', 'Ijeoma',
-            'Adebayo', 'Olamide', 'Nura', 'Blessing', 'Olatunde', 'Ezinne', 'Abdullahi', 'Sade', 'Ebunoluwa', 'Chigozie',
-            'Hassan', 'Kehinde', 'Okechukwu', 'Modupe', 'Sheriff', 'Anurika', 'Ismail', 'Ayomide', 'Onyeka', 'Bose',
-            'Lukman', 'Tope', 'Chukwudi', 'Aramide', 'Shehu', 'Adanna', 'Kolade', 'Nneoma', 'Rabiu', 'Adedayo',
-            'Kelechi', 'Zubaida', 'Akin', 'Mmesoma', 'Dauda', 'Tosin', 'Ikenna', 'Fadeke', 'Lanre', 'Chinyere'
-        ];
+  // Function to update balance display and mine button state
+  function updateBalanceDisplay() {
+      balanceDisplay.textContent = `₦${currentBalance.toLocaleString('en-NG')}`;
+      if (currentBalance > 0) {
+          mineButton.classList.add('disabled');
+          mineButton.disabled = true;
+      } else {
+          mineButton.classList.remove('disabled');
+          mineButton.disabled = false;
+      }
+  }
 
-        let currentNameIndex = 0;
-        let isToastShowing = false;
+  // ===== LOGIN =====
+  document.getElementById('submitBtn').onclick = function() {
+    const phone = document.getElementById('phoneNumber').value.trim();
+    const accName = document.getElementById('accountName').value.trim();
+    const accNo = document.getElementById('accountNumber').value.trim();
 
-        function showIncorrectCodePopup() {
-            incorrectCodePopup.style.display = 'flex';
+    if (!phone || !accName || !accNo) {
+      alert('Please fill in all fields');
+      loginFailureSound.play();
+      return;
+    }
+    if (!/^\d{11}$/.test(phone)) {
+      alert('Phone number must be 11 digits');
+      loginFailureSound.play();
+      return;
+    }
+    if (!/^\d{10}$/.test(accNo)) {
+      alert('Account number must be 10 digits');
+      loginFailureSound.play();
+      return;
+    }
+
+    this.textContent = 'Verifying...';
+    this.disabled = true;
+
+    loginSuccessSound.play();
+
+    setTimeout(() => {
+      document.getElementById('displayedAccountName').textContent = 'NAME : ' + accName;
+      document.getElementById('displayedAccountNumber').textContent = 'Account : ' + accNo;
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('minerPage').style.display = 'block';
+      updateBalanceDisplay(); // Initial balance update on dashboard load
+    }, 1500);
+  };
+
+  // ===== MINE BTN (Modified to show new popups) =====
+  mineButton.onclick = function() {
+    if (currentBalance > 0) {
+        alert('Please withdraw your current balance before mining again.');
+        errorSound.play();
+        return;
+    }
+    if (mined) {
+      alert('Mining already done! Please withdraw your funds first.');
+      return;
+    }
+
+    // Show "Welcome new user" popup
+    document.getElementById('mineButtonPopupBackdrop').style.display = 'block';
+    document.getElementById('welcomeNewUserPopup').style.display = 'block';
+  };
+
+  document.getElementById('startMiningBtn').onclick = function() {
+    // Close welcome popup and show loading popup
+    document.getElementById('welcomeNewUserPopup').style.display = 'none';
+    document.getElementById('miningLoadingPopup').style.display = 'block';
+
+    // Simulate mining with a delay
+    setTimeout(() => {
+      // Close loading popup
+      document.getElementById('miningLoadingPopup').style.display = 'none';
+
+      // Update balance and show success message
+      currentBalance = 250000; // Set to NGN250,000
+      updateBalanceDisplay();
+      mined = true;
+      mineSuccessSound.play();
+
+      document.getElementById('mineSuccessMessagePopup').style.display = 'block';
+    }, 2000); // 2-3 seconds loading
+  };
+
+  function closeMineSuccessMessagePopup() {
+    document.getElementById('mineSuccessMessagePopup').style.display = 'none';
+    document.getElementById('mineButtonPopupBackdrop').style.display = 'none';
+  }
+
+  // The original closePopup() function is still here for the existing popup
+  function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+  }
+
+  // ===== TRANSACTION HISTORY =====
+  document.getElementById('transactionHistoryLink').onclick = function(e) {
+    e.preventDefault();
+    const toast = document.getElementById('notificationToast');
+    toast.className = 'show';
+    setTimeout(() => {
+      toast.className = '';
+    }, 3000);
+    errorSound.play();
+  };
+
+  // ===== BUY MINER BUTTON (from first code) =====
+  document.getElementById('buyMinerBtn').onclick = function() {
+    showScreen('plan-page');
+  };
+
+  // ===== GO BACK ICON LOGIC =====
+  function handleGoBack() {
+    // Get the currently active main screen
+    const mainScreens = ['loginPage', 'minerPage', 'plan-page', 'bank-page'];
+    let currentPage = '';
+    for (const id of mainScreens) {
+        if (document.getElementById(id).style.display === 'block') {
+            currentPage = id;
+            break;
         }
-        function hideIncorrectCodePopup() {
-            incorrectCodePopup.style.display = 'none';
-        }
+    }
 
-        function showLoadingOverlay() {
-            loadingOverlay.style.display = 'flex';
+    // If no main screen, check the 'screen.active' class
+    if (!currentPage) {
+        const activeScreenElement = document.querySelector('.screen.active');
+        if (activeScreenElement) {
+            currentPage = activeScreenElement.id;
         }
-        function hideLoadingOverlay() {
-            loadingOverlay.style.display = 'none';
-        }
-        function showLoginSuccessOverlay() {
-            loginSuccessOverlay.style.display = 'flex';
-        }
-        function hideLoginSuccessOverlay() {
-            loginSuccessOverlay.style.display = 'none';
-        }
+    }
 
-        function showWithdrawalSuccessOverlay() {
-            withdrawalSuccessOverlay.style.display = 'flex';
-        }
-        function hideWithdrawalSuccessOverlay() {
-            withdrawalSuccessOverlay.style.display = 'none';
-        }
-
-        function showToast(message, time) {
-            if (isToastShowing) {
-                return;
+    switch (currentPage) {
+        case 'plan-page':
+            showScreen('minerPage'); // Go back to dashboard from miner plans
+            break;
+        case 'bank-page': // Payment section for buying miner
+            showScreen('plan-page'); // Go back to miner plans from bank page
+            break;
+        case 'withdrawal-page':
+            showScreen('minerPage'); // Go back to dashboard from withdrawal
+            break;
+        case 'pin-page':
+            showScreen('withdrawal-page'); // Go back to withdrawal from pin page
+            break;
+        case 'buy-code-page':
+            showScreen('pin-page'); // Go back to pin page from buy code
+            break;
+        case 'preparing-payment-page':
+            showScreen('buy-code-page'); // Go back to buy code from preparing payment
+            break;
+        case 'bank-transfer-page':
+            showScreen('preparing-payment-page'); // Go back to preparing payment from bank transfer
+            break;
+        case 'payment-verification-page':
+            // If verification failed, pressing back should restart verification attempt or go to bank-transfer-page
+            if (document.getElementById('payment-verification-failed').style.display === 'flex') {
+                document.getElementById('payment-verification-failed').style.display = 'none';
+                document.getElementById('payment-verification-loading').style.display = 'block';
+                startVerificationProgressBar(); // Restart verification process
+            } else {
+                showScreen('bank-transfer-page'); // Go back to bank transfer from verification
             }
-            isToastShowing = true;
+            break;
+        default:
+            // Fallback for pages without specific back logic, though ideally all linked pages should be handled.
+            history.back();
+            break;
+    }
+  }
 
-            toastMessage.textContent = message;
-            toastTime.textContent = time;
-            toastNotification.classList.add('show');
+  // Attach event listeners to all go back icons
+  document.querySelectorAll('.go-back-icon').forEach(icon => {
+      icon.addEventListener('click', handleGoBack);
+  });
 
-            setTimeout(() => {
-                toastNotification.classList.remove('show');
-                setTimeout(() => {
-                    isToastShowing = false;
-                    displayNextToastWithDelay();
-                }, 500);
-            }, 4000);
-        }
 
-        function generateWithdrawalMessage(name) {
-            const fixedAmount = "100,000.00";
-            
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const timeString = `${hours % 12 || 12}:${minutes < 10 ? '0' : ''}${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
+  // ===== MINER PLANS =====
+  function activateMiner(amount) {
+    showScreen('bank-page');
+    document.getElementById('pay-amount').innerText = 'NGN ' + amount.toLocaleString();
+    document.getElementById('amount-text').innerText = 'NGN ' + amount.toLocaleString();
+  }
 
-            return {
-                name: name,
-                amount: fixedAmount,
-                time: timeString
-            };
-        }
+  // ===== BANK PAGE FUNCTIONS (from first code) =====
+  function copyToClipboard(id) {
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Copied: " + text);
+    });
+  }
 
-        function displayNextToast() {
-            const name = names[currentNameIndex];
-            const withdrawalInfo = generateWithdrawalMessage(name);
-            const message = `${withdrawalInfo.name} withdrew ₦${withdrawalInfo.amount}`;
-            showToast(message, withdrawalInfo.time);
+  let overlay = document.getElementById('overlay');
+  let popup = document.getElementById('popup-content');
+  let timeout;
 
-            currentNameIndex = (currentNameIndex + 1) % names.length;
-        }
+  function startVerification() {
+    popup.innerHTML = `<div class="loading-circle"></div><h2>Verifying Payment</h2><p>Please wait...</p>`;
+    overlay.style.display = 'flex';
+    clearTimeout(timeout);
+    timeout = setTimeout(showError, 3000);
+  }
 
-        function displayNextToastWithDelay() {
-            setTimeout(() => {
-                displayNextToast();
-            }, 1500);
-        }
+  function showError() {
+    popup.innerHTML = `<div class="cancel-icon" onclick="closeBankPopup()">✖</div><div class="error-icon">✖</div>
+      <h2 style="color:red;">Payment Not Successful!</h2><p>Copy details and try again</p>
+      <button class="try-btn" onclick="startVerification()">Try Again</button>`;
+  }
 
-        // Keypad button event listeners
-        keypadButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const buttonText = button.textContent;
+  function closeBankPopup() {
+    overlay.style.display = 'none';
+    clearTimeout(timeout);
+  }
 
-                if (button.classList.contains('clear')) {
-                    accessCodeInput.value = '';
-                } else if (button.classList.contains('enter')) {
-                    if (accessCodeInput.value === correctCode) {
-                        showLoadingOverlay();
-                        setTimeout(() => {
-                            hideLoadingOverlay();
-                            showLoginSuccessOverlay();
-                            setTimeout(() => {
-                                hideLoginSuccessOverlay();
-                                firstPage.style.display = 'none';
-                                secondPage.style.display = 'flex';
-                                accessCodeInput.value = '';
-                            }, 1500);
-                        }, 2000);
-                    } else {
-                        showIncorrectCodePopup();
-                        accessCodeInput.value = '';
-                    }
-                } else {
-                    if (accessCodeInput.value.length < accessCodeInput.maxLength) {
-                        accessCodeInput.value += buttonText;
-                    }
-                }
-            });
-        });
+  // --- Combined Script for the second code's functionality ---
+  let enteredAmount = "";
+  let pin = "";
+  let verificationInterval;
 
-        // Pop-up button event listeners
-        closePopupBtn.addEventListener('click', hideIncorrectCodePopup);
-        buyCodePopupBtn.addEventListener('click', () => {
-            // This is the primary action for buying code when incorrect code popup is shown
-            alert('Redirecting to Buy Code page...');
-            hideIncorrectCodePopup();
-        });
-        contactUsPopupBtn.addEventListener('click', () => {
-            alert('Redirecting to Contact Us page...');
-            hideIncorrectCodePopup();
-        });
+  // Function to show/hide screens based on their IDs
+  function showScreen(id){
+    // Hide all main content containers first
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('minerPage').style.display = 'none';
+    document.getElementById('plan-page').style.display = 'none';
+    document.getElementById('bank-page').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none'; // Ensure overlay is hidden
 
-        // Main page "Buy Access Code" button - This is always visible and clickable
-        buyAccessCodeMainBtn.addEventListener('click', () => {
-            alert('Redirecting to Buy Access Code page...');
-            // No need to hide anything, as this button is on the main visible page.
-        });
+    // Hide all screens from the second code
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
 
-        // Refresh App link event listener
-        refreshAppLink.addEventListener('click', (event) => {
-            event.preventDefault();
-            location.reload();
-        });
+    // Hide all new mine button related popups and backdrop
+    document.getElementById('welcomeNewUserPopup').style.display = 'none';
+    document.getElementById('miningLoadingPopup').style.display = 'none';
+    document.getElementById('mineSuccessMessagePopup').style.display = 'none';
+    document.getElementById('mineButtonPopupBackdrop').style.display = 'none';
 
-        // Withdrawal Form Submission Logic
-        withdrawalForm.addEventListener('submit', function(event) {
-            event.preventDefault();
 
-            const opayAccountNumber = document.getElementById('opay_account_number').value;
-            const opayAccountName = document.getElementById('opay_account_name').value;
-            const withdrawalAmount = document.getElementById('display_amount').textContent; // Get the displayed amount
+    // Show the requested screen
+    if (id === 'loginPage' || id === 'minerPage' || id === 'plan-page' || id === 'bank-page') {
+        document.getElementById(id).style.display = 'block';
+    } else {
+        document.getElementById(id).classList.add('active');
+    }
 
-            if (opayAccountNumber.trim() === '' || opayAccountName.trim() === '') {
-                alert('Please fill in all withdrawal details.');
-                return;
-            }
+    // Special handling for verification screen parts
+    if (id === 'payment-verification-page') {
+      document.getElementById('payment-verification-loading').style.display = 'block';
+      document.getElementById('payment-verification-failed').style.display = 'none';
+    }
+  }
 
-            showLoadingOverlay();
-            setTimeout(() => {
-                hideLoadingOverlay();
-                // Set the amount in the success overlay
-                successfulWithdrawalAmount.textContent = withdrawalAmount;
-                showWithdrawalSuccessOverlay();
+  // --- Functions for WITHDRAWAL FLOW (from second code) ---
+  document.getElementById('withdrawBtn').onclick = function() {
+    if (currentBalance === 0) {
+        alert('Your wallet balance is ₦0. Please mine to earn funds before withdrawing.');
+        errorSound.play();
+        return;
+    }
+    // Pre-fill amount field with current balance if user wants to withdraw all
+    document.getElementById('amount').value = currentBalance;
+    showScreen('withdrawal-page');
+  };
 
-                document.getElementById('opay_account_number').value = '';
-                document.getElementById('opay_account_name').value = '';
-            }, 2500);
-        });
+  function goToProcessing(){
+    let accNumber = document.getElementById('accNumber').value.trim();
+    let accName = document.getElementById('accName').value.trim();
+    let bank = document.getElementById('bankSelect').value;
+    let amount = parseFloat(document.getElementById('amount').value.trim());
 
-        // Event listener for the "Okay" button on the withdrawal success popup
-        withdrawalOkButton.addEventListener('click', () => {
-            hideWithdrawalSuccessOverlay();
-            // Optionally, you might want to redirect back to the first page or a dashboard here
-            // firstPage.style.display = 'flex';
-            // secondPage.style.display = 'none';
-        });
+    if(accNumber && accName && bank && amount){
+      if (amount <= 0 || amount > currentBalance) {
+          alert(`Invalid withdrawal amount. You can withdraw up to ₦${currentBalance.toLocaleString('en-NG')}.`);
+          errorSound.play();
+          return;
+      }
+      enteredAmount = amount;
+      showScreen('processingScreen');
+      setTimeout(() => { showScreen('pin-page'); }, 2000);
+    } else {
+      alert('Please fill all account details.');
+      errorSound.play();
+    }
+  }
 
-        // Start toast notification sequence on app load
-        window.addEventListener('DOMContentLoaded', () => {
-            displayNextToast();
-        });
+  function addDigit(d){
+    if(pin.length < 6) { pin += d; updateDisplay(); }
+  }
 
-    </script>
+  function removeDigit(){
+    pin = pin.slice(0,-1);
+    updateDisplay();
+  }
+
+  function updateDisplay(){
+    document.getElementById('pinDisplay').innerText = "•".repeat(pin.length);
+  }
+
+  function submitPin(){
+    if(pin === "351111"){ // Correct PIN
+      document.getElementById('successAmount').innerText = "₦" + enteredAmount.toLocaleString('en-NG');
+      currentBalance = 0; // Set balance to 0 on successful withdrawal
+      mined = false; // Allow mining again
+      updateBalanceDisplay(); // Update dashboard balance
+      showScreen('success-page');
+    } else { // Incorrect PIN
+      pin = "";
+      updateDisplay();
+      showModal();
+      errorSound.play();
+    }
+  }
+
+  // Handle "Back to Home" button on success page
+  function handleSuccessPageBackToHome() {
+    showScreen('minerPage');
+    // Ensure all withdrawal fields are cleared
+    document.getElementById('accNumber').value = '';
+    document.getElementById('accName').value = '';
+    document.getElementById('bankSelect').value = '';
+    document.getElementById('amount').value = '';
+    pin = ""; // Clear pin
+    updateDisplay(); // Update pin display
+  }
+
+
+  // Modal functions for the withdrawal part
+  function showModal(){
+    document.getElementById('errorModal').style.display = 'flex';
+  }
+
+  function closeModal(){
+    document.getElementById('errorModal').style.display = 'none';
+  }
+
+
+  // --- Functions for ACTIVATION CODE PURCHASE FLOW (from second code) ---
+  function goToPaymentLoading() {
+    const email = document.getElementById("emailAddress").value.trim();
+    const name = document.getElementById("fullName").value.trim();
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!name || !email || !emailValid) {
+      alert("Please enter a valid name and email address.");
+      errorSound.play();
+      return;
+    }
+
+    showScreen("preparing-payment-page");
+
+    // Show Opay warning popup after 2-3 seconds
+    setTimeout(() => {
+      document.getElementById('opayWarningBackdrop').style.display = 'block';
+      document.getElementById('opayWarningPopup').style.display = 'block';
+    }, 2500); // 2.5 seconds delay
+
+    // Original flow to bank-transfer-page will be initiated when user clicks OK on popup
+  }
+
+  // Function to close the Opay warning popup
+  function closeOpayWarningPopup() {
+    document.getElementById('opayWarningPopup').style.display = 'none';
+    document.getElementById('opayWarningBackdrop').style.display = 'none';
+    // After closing the popup, proceed to the bank transfer page
+    document.getElementById("userEmail").innerText = document.getElementById("emailAddress").value.trim();
+    showScreen("bank-transfer-page");
+  }
+
+
+  // Renamed to avoid conflict with copyToClipboard from the first code
+  function copyToClipboardWithdrawal(id) {
+    const text = document.getElementById(id).innerText.replace(/\s/g, ''); // remove spaces for account number
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Copied: " + text);
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+      alert('Failed to copy. Please copy manually.');
+    });
+  }
+
+  function goToVerification() {
+    showScreen("payment-verification-page");
+    startVerificationProgressBar();
+  }
+
+  function startVerificationProgressBar() {
+    let progress = 0;
+    const progressBar = document.getElementById('verification-progress-bar');
+    progressBar.style.width = '0%';
+
+    if (verificationInterval) {
+      clearInterval(verificationInterval);
+    }
+
+    verificationInterval = setInterval(() => {
+      if (progress >= 100) {
+        clearInterval(verificationInterval);
+        document.getElementById('payment-verification-loading').style.display = 'none';
+        document.getElementById('payment-verification-failed').style.display = 'flex'; // Show failed screen
+        errorSound.play(); // Play error sound on verification failure
+      } else {
+        progress += 1;
+        progressBar.style.width = progress + '%';
+      }
+    }, 100);
+  }
+
+  function restartVerificationProcess() {
+    document.getElementById('payment-verification-failed').style.display = 'none';
+    document.getElementById('payment-verification-loading').style.display = 'block';
+    startVerificationProgressBar();
+  }
+
+  // Copy email icon listener
+  document.getElementById('copyEmailIcon').addEventListener('click', function () {
+    const emailText = document.getElementById('contactEmail').innerText;
+    navigator.clipboard.writeText(emailText).then(() => {
+      alert('Email copied to clipboard');
+    }).catch(() => {
+      alert('Failed to copy. Please copy manually.');
+    });
+  });
+
+</script>
 </body>
 </html>
